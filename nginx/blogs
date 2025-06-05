@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name ~^(?<username>.+)\.blog\.in$;
+    root /home/authors/$username/public;
+    location / {
+        autoindex on;
+        try_files $uri $uri/ =404;
+    }
+}

@@ -1,0 +1,28 @@
+admins:
+- name: Mukund Krishnan
+  username: mukundk
+- name: Jeyasenthuran
+  username: jey
+
+users:
+- name: Aarav
+  username: aarav01
+- name: Aisha
+  username: aisha02
+
+authors:
+- name: Ananya
+  username: ananya
+- name: Firoz
+  username: firoz
+-
+mods:
+- name: Praveen
+  username: praveen
+  authors:
+  - ananya
+- name: Roshan
+  username: roshan
+  authors:
+  - firoz
+

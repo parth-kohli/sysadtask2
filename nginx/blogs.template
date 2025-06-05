@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name USERNAME.blog.in;
+    root /home/authors/USERNAME/public;
+    index index.html;
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
