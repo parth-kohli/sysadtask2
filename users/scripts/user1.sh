@@ -1,4 +1,6 @@
-DB_HOST="localhost"
+#!/bin/bash
+
+DB_HOST="db"
 DB_USER="root"
 DB_PASS="parthsarth9541"
 DB_NAME="blogdb"
@@ -13,7 +15,6 @@ insert_users_from_group() {
   local primary_users=$(getent passwd | awk -F: -v gid="$gid" '$4 == gid { print $1 }')
   local secondary_users=$(getent group "$group" | cut -d: -f4 | tr ',' ' ')
   local users=$(echo -e "$primary_users\n$secondary_users" | sort -u)
-
   for user in $users; do
     if [[ -n "$user" ]]; then
       echo "Inserting $user from $group_type"
@@ -26,6 +27,7 @@ EOF
   done
 }
 insert_users_from_group "g_admin"  "g_admin"
-insert_users_from_group "g_mod"  "g_mod"
+insert_users_from_group "g_mod"    "g_mod"
 insert_users_from_group "g_user"   "g_user"
 insert_users_from_group "g_author" "g_author"
+

@@ -1,11 +1,14 @@
 CREATE DATABASE IF NOT EXISTS blogdb;
 USE blogdb;
+CREATE USER 'readonly'@'%' IDENTIFIED BY 'readonlypass';
+GRANT SELECT ON blogdb.* TO 'readonly'@'%';
+FLUSH PRIVILEGES;
+SELECT 'Database is initialized!'
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     group_type ENUM('g_admin', 'g_user', 'g_author', 'g_mod') NOT NULL
 );
-
 CREATE TABLE IF NOT EXISTS blogs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,

@@ -1,0 +1,11 @@
+Host nginx-jump
+  HostName <nginx-container-ip-or-hostname>  # e.g. localhost if port forwarded, or container IP
+  User nginxuser
+  Port 22
+
+Host users-container
+  HostName <users-container-ip>             # e.g. container IP on blognet network
+  User youruser
+  ProxyJump nginx-jump
+  Port 22
+

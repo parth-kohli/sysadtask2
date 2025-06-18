@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    container_name: blog_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: parthsarth9541
+      MYSQL_DATABASE: blogdb
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init_db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 512M
+          pids: 100
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: blog_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_USER: readonly
+      PMA_PASSWORD: readonlypass
+    ports:
+      - "8180:80"
+    networks:
+      - internal
+  users:
+    build:
+      context: .
+      dockerfile: users/Dockerfile
+    container_name: blog_users
+    restart: always
+    hostname: users
+    volumes:
+      - ./home:/home
+    cap_add:
+      - SYS_ADMIN
+    expose:
+      - "22"
+    networks:
+      - internal
+      - frontend
+    depends_on:
+      db:
+       condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 512M
+          pids: 100
+
+  nginx:
+    image: nginx:latest
+    container_name: blog_nginx
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites-available:/etc/nginx/sites-available
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ./ssl:/etc/ssl/private
+      - /home/authors:/home/authors:ro
+      - ./nginx/setupnginx.sh:/usr/local/bin/setupnginx.sh
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2222:22"
+    command: ["/bin/bash", "-c", "/usr/local/bin/setupnginx.sh && nginx -g 'daemon off;'"]
+    networks:
+      - frontend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+          pids: 50
+
+volumes:
+  db_data:
+networks:
+ 
+  internal:
+    driver: bridge
+  frontend:
+    driver: bridge

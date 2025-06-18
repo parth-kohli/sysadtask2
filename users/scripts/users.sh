@@ -36,7 +36,8 @@ create_user(){
 	chmod 755 "$home"
 	
 	if [[ "$role" == "authors" ]];then
-		mkdir -p "$home/blogs" "$home/public" "$home/files""$home/subscribed"
+		mkdir -p "$home/blogs" "$home/public" "$home/files" "$home/subscribed"
+		echo "line1"
 		chown "$username:$group" "$home/blogs" "$home/public" "$home/files" "$home/subscribed"
 		chmod 700 "$home/blogs"
 		chmod 755 "$home/public"
@@ -75,7 +76,7 @@ create_all_blogs_symlinks() {
 	mkdir -p "$blog_dir"
 	local sub_dir="/home/users/$user/subscribed"
 	mkdir -p "$sub_dir"
-	
+	echo "line2"
 	chown "$user:${GROUPS[users]}" "$blog_dir"
 	chown "$user:${GROUPS[users]}" "$sub_dir"
 	find "$blog_dir" -type l -delete
@@ -132,17 +133,16 @@ echo "%g_user ALL=(ALL) NOPASSWD: /scripts/request_author.sh" > /etc/sudoers.d/r
     chmod 440 /etc/sudoers.d/request_author
 echo "%g_author ALL=(ALL) NOPASSWD: /scripts/author.sh" > /etc/sudoers.d/author && \
     chmod 440 /etc/sudoers.d/author
-chmod +x /home
-chmod +x /home/authors
+chmod o+x /home /home/authors
 for author in $(ls /home/authors); do
     chmod +x /home/authors/$author
     chmod -R o+r /home/authors/$author/public
 done
-DB_HOST="localhost"
+DB_HOST="db"
 DB_USER="root"
-DB_PASS="root"
+DB_PASS="parthsarth9541"
 DB_NAME="blogdb"
-until mysqladmin ping -h "$DB_HOST" --silent; do
+until mysqladmin ping -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" --silent; do
   echo "Waiting for MySQL..."
   sleep 2
 done
